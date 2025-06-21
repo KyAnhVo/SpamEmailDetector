@@ -8,7 +8,7 @@ import heapq
 import copy
 
 class SedVocabulary:
-    emails: List[List[str | bool]]
+    emails: List[list[str, bool]]
     vocabulary: Dict[str, int]
     _activeVocabulary: Dict[str, int]
     activeVocabularySize: int
