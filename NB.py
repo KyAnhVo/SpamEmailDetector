@@ -12,7 +12,7 @@ class NB:
 
     def __init__(self, x: torch.Tensor, y: torch.Tensor, k: int):
         assert(x.dim() == 2 and y.dim() == 1), 'expect matrix x and y'
-        assert(x.size()[0] == y.size()[0]), 'expect x: (m, n) and y: (m, 1)'
+        assert(x.size()[0] == y.size()[0]), 'expect x: (m, n) and y: (m,)'
         assert(isinstance(k, int) and k >= 2), 'expect class to be positive integer greater than or equal to 2'
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
