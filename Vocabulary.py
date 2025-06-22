@@ -51,7 +51,21 @@ class SedVocabulary:
                 return
         raise ValueError('email not in email list')
     
-    def getInputLst(self) -> Tuple[List[List[int]], List[int], List[str]]:
+    def emailToList(self, email: str) -> List[int]:
+        inputLst = sorted(list(self._activeVocabulary.keys()))
+        indexDict = {word: index for index, word in enumerate(inputLst)}
+
+        x = [0 for i in range(len(inputLst))]
+
+        words = self._tokenize(email)
+        for word in words:
+            if word not in indexDict:
+                continue
+            x[indexDict[word]] = 1
+
+        return x
+    
+    def getInputLst(self) -> Tuple[List[List[int]], List[int]]:
         if not self.activeVocabularyUpdated:
             self._updateActiveVocabulary()
 
@@ -73,7 +87,7 @@ class SedVocabulary:
             # handle y
             y.append(int(isSpam))
         
-        return x, y, inputLst
+        return x, y
     
     def _tokenize(self, string: str) -> List[str]:
         lowered = string.lower()

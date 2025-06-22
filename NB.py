@@ -18,7 +18,7 @@ class NB:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         self.x = x.to(device= device, dtype= torch.float32)
-        self.y = torch.nn.functional.one_hot(tensor= y, num_classes= k).to(device= device, dtype= torch.float32)
+        self.y = torch.nn.functional.one_hot(input= y, num_classes= k).to(device= device, dtype= torch.float32)
 
         self.m, self.n = self.x.size()
         self.k = k
@@ -28,9 +28,11 @@ class NB:
 
     def predict(self, x: torch.Tensor):
         assert (x.dim() == 1 and x.size() == (self.n,)), f'expect 1D array of size (n,), instead received {x.size()}'
+        print(x.size())
         x = x.unsqueeze(dim= 0)
-        return torch.argmax(x @ torch.log(self.Phi) + (1 - x) @ torch.log(1 - self.Phi) + torch.log(self.P), dim= 1)
-
+        print(x.size(), self.Phi.size())
+        ret = (x @ torch.log(self.Phi) + (1 - x) @ torch.log(1 - self.Phi) + torch.log(self.P.T)).squeeze()
+        return torch.argmax(ret)
 
     def __calculateP(self):
         self.P = torch.mean(input= self.y, dim= 0, dtype= torch.float32, keepdim= True).T
