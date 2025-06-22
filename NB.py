@@ -1,6 +1,8 @@
 import torch
 
 class NB:
+    device: torch.device
+
     x: torch.Tensor
     y: torch.Tensor
     Phi: torch.Tensor
@@ -15,10 +17,10 @@ class NB:
         assert(x.size()[0] == y.size()[0]), 'expect x: (m, n) and y: (m,)'
         assert(isinstance(k, int) and k >= 2), 'expect class to be positive integer greater than or equal to 2'
 
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        self.x = x.to(device= device, dtype= torch.float32)
-        self.y = torch.nn.functional.one_hot(input= y, num_classes= k).to(device= device, dtype= torch.float32)
+        self.x = x.to(device= self.device, dtype= torch.float32)
+        self.y = torch.nn.functional.one_hot(input= y, num_classes= k).to(device= self.device, dtype= torch.float32)
 
         self.m, self.n = self.x.size()
         self.k = k
@@ -27,10 +29,10 @@ class NB:
         self.__calculatePhi()
 
     def predict(self, x: torch.Tensor):
+        x = x.to(dtype= torch.float32, device= self.device)
         assert (x.dim() == 1 and x.size() == (self.n,)), f'expect 1D array of size (n,), instead received {x.size()}'
-        print(x.size())
+
         x = x.unsqueeze(dim= 0)
-        print(x.size(), self.Phi.size())
         ret = (x @ torch.log(self.Phi) + (1 - x) @ torch.log(1 - self.Phi) + torch.log(self.P.T)).squeeze()
         return torch.argmax(ret)
 

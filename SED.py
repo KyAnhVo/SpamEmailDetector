@@ -42,17 +42,21 @@ def main():
     predictor: NB = NB(x, y, 2)
 
     while True:
-        if not input('Get email prediction? (Y|n)').lower() == 'y':
+        if not input('Get email prediction? (Y|n): ').lower() == 'y':
             break
         filename = getFile()
         
         email = ''
         with open(file= filename, mode= 'r', encoding= 'utf-8') as emailFile:
             email = emailFile.read()
-        
-        print(predictor.predict(
-            torch.tensor(emailList.emailToList(email), dtype= torch.float32, device= 'cuda' if torch.cuda.is_available() else 'cpu')
-        ))
+
+        inputLst = emailList.emailToList(email)
+        prediction = predictor.predict(
+            torch.tensor(inputLst, dtype= torch.float32, device= 'cuda' if torch.cuda.is_available() else 'cpu')
+        )
+        prediction = True if prediction.item() == 1 else False
+
+        print(f'Email is{'' if prediction else ' not'} spam email.\n')
 
 
 if __name__ == '__main__':
